@@ -26,5 +26,5 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "../server/src/index.ts"]
+  "include": ["src", "../server/src/*"]
 }

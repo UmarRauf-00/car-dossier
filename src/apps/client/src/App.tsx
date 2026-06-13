@@ -3,32 +3,30 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import "./App.css";
 
-const GET_LOCATIONS = gql`
-  query GetLocations {
-    locations {
+const GET_CARS = gql`
+  query GetAllCars {
+    cars {
       id
-      name
-      description
-      photo
+      make
+      model
+      year
+      trim
     }
   }
 `;
 
 function DisplayLocations() {
-  const { loading, error, data } = useQuery(GET_LOCATIONS);
+  const { loading, error, data } = useQuery(GET_CARS);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
 
   // @ts-expect-error - This is just a setup - will add types when plugging in actual apis
-  return data.locations.map(({ id, name, description, photo }) => (
+  return data.cars.map(({ id, make, model, trim }) => (
     <div key={id}>
-      <h3>{name}</h3>
-      <img width="400" height="250" alt="location-reference" src={`${photo}`} />
-      <br />
-      <b>About this location:</b>
-      <p>{description}</p>
-      <br />
+      <h3>{make}</h3>
+      <p>Model: {model}</p>
+      <p>Trim: {trim}</p>
     </div>
   ));
 }

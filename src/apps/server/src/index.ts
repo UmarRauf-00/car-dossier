@@ -1,4 +1,10 @@
 import express, {type Express, type Request, type Response } from "express";
+import { ApolloServer, type BaseContext } from "@apollo/server";
+import { expressMiddleware} from '@apollo/server/express4'
+import { typeDefs } from "./schema"
+import { resolvers } from "./resolvers"
+
+import cors from 'cors'
 
 const app: Express = express();
 
@@ -13,14 +19,31 @@ const dummyData = [{
         year: "2012"
     }];
 
-// GET
 
+app.use(cors({ origin: 'http://192.168.1.34:5173' }))
+
+const server = new ApolloServer<BaseContext>({
+    typeDefs,
+    resolvers
+});
+
+async function startServer() {
+  await server.start()
+  app.use('/graphql', expressMiddleware(server))
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`)
+  })
+}
+
+// GET
 /**
  * @return All cars data
  */
 app.get("/", (_req: Request, res: Response) => {
         res.status(200).send(dummyData)
-})
+    })
+
+
 
 /**
  * @return Single car data by ID
@@ -36,6 +59,5 @@ app.get("/:id", (req: Request, res: Response) => {
     } 
 })
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+
+startServer();
