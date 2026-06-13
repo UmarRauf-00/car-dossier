@@ -18,14 +18,14 @@ const dummyData = [{
 /**
  * @return All cars data
  */
-app.get("/", (req: Request, res: Response, /* next */) => {
+app.get("/", (_req: Request, res: Response) => {
         res.status(200).send(dummyData)
 })
 
 /**
  * @return Single car data by ID
  */
-app.get("/:id", (req: Request, res: Response, /* next */) => {
+app.get("/:id", (req: Request, res: Response) => {
     const id = parseInt(req.params.id as string)
     if(!(isNaN(id)) || !id){
         const matchingNode = dummyData.find(data => data.id === id);

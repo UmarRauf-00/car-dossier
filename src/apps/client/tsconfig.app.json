@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ESNext",
     "lib": ["ESNext", "DOM"],
@@ -22,9 +23,8 @@
     "noFallthroughCasesInSwitch": true,
 
     /* strictness */
-    "strict": true, 
-    "forceConsistentCasingInFileNames": true,
-
+    "strict": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src"]
+  "include": ["src", "../server/src/index.ts"]
 }

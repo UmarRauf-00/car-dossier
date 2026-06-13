@@ -1,7 +1,7 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.tsx";
 
 import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
@@ -25,9 +25,11 @@ client
     `,
   })
   .then((result) => console.log("GQL results", result));
-  
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+
+createRoot(document.getElementById("root")!).render(
+  <ApolloProvider client={client}>
+    <StrictMode>
+      <App />
+    </StrictMode>
+  </ApolloProvider>,
+);
