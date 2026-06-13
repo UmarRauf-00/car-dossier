@@ -1,20 +1,27 @@
 {
   "name": "client",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite --host",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "^11.5.1",
-      "onFail": "download"
-    }
+  "dependencies": {
+    "@apollo/client": "^4.2.3",
+    "graphql": "^16.14.2",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "rxjs": "^7.8.2"
   },
-  "type": "module"
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@rolldown/plugin-babel": "^0.2.3",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
 }

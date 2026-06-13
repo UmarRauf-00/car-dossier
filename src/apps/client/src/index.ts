@@ -31,7 +31,7 @@ app.get("/:id", (req: Request, res: Response, /* next */) => {
         const matchingNode = dummyData.find(data => data.id === id);
 
         if(!matchingNode) return res.status(404).send({msg: `No cars found with id: ${id}`})
-        
+         
         res.status(200).send(dummyData)
     } 
 })
