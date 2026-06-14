@@ -22,5 +22,8 @@
     "globals": "^17.6.0",
     "typescript": "catalog:",
     "typescript-eslint": "^8.59.2"
+  },
+  "dependencies": {
+    "graphql": "^16.14.2"
   }
 }

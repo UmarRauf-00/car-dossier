@@ -1,15 +1,18 @@
 export const typeDefs = `#graphql
-  type Car {
+  type vehicleType {
+        isPrimary: Boolean
+        name: String
+      }
+  
+  type AllManufacturers {
     id: ID!
-    make: String!
-    model: String!
-    year: Int!
-    trim: String
+    companyName: String
+    country: String!
+    fullCompanyName: String!
+    vehicleType: [vehicleType]
   }
 
   type Query {
-    cars: [Car!]!
-    car(id: ID!): Car
+    allManufacturers: [AllManufacturers!]!
   }
-`
-
+`;
