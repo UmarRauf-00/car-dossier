@@ -12,7 +12,14 @@ export const typeDefs = `#graphql
     vehicleType: [vehicleType]
   }
 
+  type GetMakeForManufacturer {
+    makeId: Int!
+    makeName: String!
+    manufacturerName: String!
+  }
+
   type Query {
     allManufacturers: [AllManufacturers!]!
+    getMakeForManufacturer(searchTerm: String!): [GetMakeForManufacturer!]!
   }
 `;
