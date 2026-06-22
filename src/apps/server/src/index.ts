@@ -12,7 +12,7 @@ const app: Express = express();
 // Middleware to parse json
 app.use(express.json());
 
-app.use(cors({ origin: "http://192.168.1.34:5173" }));
+app.use(cors({ origin: "http://localhost:5173" }));
 
 const server = new ApolloServer<BaseContext>({
   typeDefs,
