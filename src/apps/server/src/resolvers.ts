@@ -184,10 +184,10 @@ export const resolvers = {
       _: unknown,
       {
         userId,
-        favoriteIds,
+        favoriteManufacturer,
       }: {
         userId: number;
-        favoriteIds: number[];
+        favoriteManufacturer: string[];
       },
     ) => {
       console.log(
@@ -195,12 +195,12 @@ export const resolvers = {
         "color: #7f7700",
         "MUTATION FUNC CALLED",
         userId,
-        favoriteIds,
+        favoriteManufacturer,
       );
       try {
-        if (!userId || !favoriteIds) {
+        if (!userId || !favoriteManufacturer) {
           throw new GraphQLError(
-            `Missing properties to make the update request. userId: ${userId} & favoriteIds: ${favoriteIds}`,
+            `Missing properties to make the update request. userId: ${userId} & favoriteManufacturer: ${favoriteManufacturer}`,
             {
               extensions: { code: "BAD_USER_INPUT" },
             },
@@ -210,7 +210,7 @@ export const resolvers = {
           `UPDATE users
            SET  favorite_manufactures = $1
            WHERE user_id = $2;`,
-          [favoriteIds, userId],
+          [favoriteManufacturer, userId],
         );
         return true;
       } catch (error) {

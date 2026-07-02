@@ -50,11 +50,14 @@ const QUERY: TypedDocumentNode<
 `;
 
 const MUTATION_QUERY: TypedDocumentNode<
-  { updateUser: { userId: number; favoriteIds: number[] } },
-  { userId: number; favoriteIds: number[] }
+  { updateUser: { userId: number; favoriteManufacturer: string[] } },
+  { userId: number; favoriteManufacturer: string[] }
 > = gql`
-  mutation updateUser($userId: Int, $favoriteIds: [Int]) {
-    updateUserFavorites(userId: $userId, favoriteIds: $favoriteIds)
+  mutation updateUser($userId: Int, $favoriteManufacturer: [String]) {
+    updateUserFavorites(
+      userId: $userId
+      favoriteManufacturer: $favoriteManufacturer
+    )
   }
 `;
 
@@ -79,11 +82,13 @@ interface FavoriteIdsType {
 }
 
 const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
-  const [favoriteIds, setFavoriteIds] = useState<FavoriteIdsType[]>([]);
+  const [favoriteManufacturer, setFavoriteIds] = useState<FavoriteIdsType[]>(
+    [],
+  );
 
   const handleCheckboxChange = (makeId: number, manufacturerName: string) => {
     if (
-      !favoriteIds.find(
+      !favoriteManufacturer.find(
         (f) => f.id === makeId && f.manufacturerName === manufacturerName,
       )
     ) {
@@ -114,17 +119,19 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   useEffect(() => {
     //debouncing checkbox click by 500ms
     const timer = setTimeout(() => {
-      const ids = favoriteIds.map((f) => f.id);
+      const manufacturers = favoriteManufacturer.map(
+        (f) => `${f.id}:${f.manufacturerName}`,
+      );
       updateUserFavorites({
         variables: {
           userId: 2, // This needs to be replaced with a logged in user's user_ida
-          favoriteIds: ids,
+          favoriteManufacturer: manufacturers,
         },
       });
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [favoriteIds, updateUserFavorites]);
+  }, [favoriteManufacturer, updateUserFavorites]);
 
   if (error) return <p>Error : {error.message}</p>;
   if (searchTerm && !loading && !data) return <p>Data is undefined</p>;
@@ -134,7 +141,7 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   // DEBUGGING
   console.log(
     data,
-    // favoriteIds.map((f) => `${f.id} - ${f.manufacturerName}`),
+    // favoriteManufacturer.map((f) => `${f.id} - ${f.manufacturerName}`),
   );
 
   return (
@@ -165,7 +172,7 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
                     icon={<FavoriteBorder />}
                     checkedIcon={<Favorite />}
                     slotProps={{ input: { "aria-label": "Favorite checkbox" } }}
-                    checked={favoriteIds.some(
+                    checked={favoriteManufacturer.some(
                       (f) =>
                         f.id === d.makeId &&
                         f.manufacturerName === d.manufacturerName,

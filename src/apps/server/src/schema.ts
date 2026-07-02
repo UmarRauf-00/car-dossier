@@ -39,6 +39,6 @@ export const typeDefs = `#graphql
   }
 
   type Mutation {
-    updateUserFavorites(userId: Int, favoriteIds: [Int]) : Boolean
+    updateUserFavorites(userId: Int, favoriteManufacturer: [String]) : Boolean
   }
 `;
