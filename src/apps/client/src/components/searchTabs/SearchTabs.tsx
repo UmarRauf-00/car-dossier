@@ -5,7 +5,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import SearchByName from "./SearchByName";
-import SearchByVIN from "./SearchByVIN";
+import GetDetailsByMakeID from "./GetDetailsByMakeID";
 import SearchByMakeAndYear from "./SearchByMakeAndYear";
 
 const SearchTabs = () => {
@@ -22,20 +22,27 @@ const SearchTabs = () => {
           <TabList
             onChange={handleChange}
             aria-label="Different search options tabs"
-            sx={{ "& .MuiTab-root": { textTransform: "none" } }}
+            sx={{
+              "& .MuiTab-root": {
+                textTransform: "none",
+                paddingY: "20px",
+              },
+              "& .Mui-selected": {
+                background: "#175ca0",
+                color: "#FFFFFF",
+                borderTop: "1px solid #cbe5ff",
+                boxShadow: "0px 1px 3px #076ccb",
+              },
+            }}
           >
             <Tab label="By Name" value="1" />
-            <Tab label="By VIN" value="2" />
-            <Tab label="By Make & Year" value="3" />
+            <Tab label="By Make & Year" value="2" />
           </TabList>
         </Box>
         <TabPanel value="1">
           <SearchByName />
         </TabPanel>
         <TabPanel value="2">
-          <SearchByVIN />
-        </TabPanel>
-        <TabPanel value="3">
           <SearchByMakeAndYear />
         </TabPanel>
       </TabContext>

@@ -8,6 +8,8 @@ import { ApolloProvider } from "@apollo/client/react";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { theme } from "./theme.ts";
 import { port } from "./helpers/const.tsx";
+import { BrowserRouter, Route, Routes } from "react-router";
+import GetDetailsByMakeID from "./components/searchTabs/GetDetailsByMakeID.tsx";
 
 const client = new ApolloClient({
   link: new HttpLink({
@@ -24,7 +26,15 @@ createRoot(document.getElementById("root")!).render(
     <ApolloProvider client={client}>
       <ThemeProvider theme={theme}>
         <CssBaseline /> {/* MUI's CSS reset — replaces what Vite added */}
-        <App />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route
+              path="/makeDetails/:makeId"
+              element={<GetDetailsByMakeID />}
+            />
+          </Routes>
+        </BrowserRouter>
       </ThemeProvider>
     </ApolloProvider>
   </StrictMode>,

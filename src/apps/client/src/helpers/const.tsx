@@ -1,5 +1,5 @@
 // Local port
-export const port = 4000;
+export const port = 3001;
 
 // local
-export const graphqlServer = `localhost:${port}/graphq`;
+export const graphqlServer = `http://localhost:${port}/graphql`;

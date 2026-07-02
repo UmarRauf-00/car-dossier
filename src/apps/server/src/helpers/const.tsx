@@ -1,5 +1,7 @@
+import "dotenv/config";
+
 // Local port
-export const port = 4000;
+export const port = process.env.PORT;
 
 // local
 export const graphqlServer = `localhost:${port}/graphq`;
