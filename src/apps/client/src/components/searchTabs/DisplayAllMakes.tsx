@@ -13,35 +13,44 @@ import {
 } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
 import { Link } from "react-router";
 
-interface apiData {
+interface makeForManufacturerType {
   makeId: number;
   makeName: string;
   manufacturerName: string;
-  users: {
-    user_id: number;
-    first_name: string;
-    last_name: string;
-    favorite_manufactures: number[];
-  };
+}
+
+interface usersType {
+  user_id: number;
+  first_name: string;
+  last_name: string;
+  favorite_manufactures: string[];
 }
 
 const QUERY: TypedDocumentNode<
   {
-    getMakeForManufacturer: apiData[];
+    getMakeForManufacturer: makeForManufacturerType[];
+    users: usersType[];
   },
-  { searchTerm?: string; userId?: string }
+  { searchTerm?: string; userId?: number }
 > = gql`
-  query getMake($searchTerm: String!, $userId: String) {
+  query getMake($searchTerm: String!, $userId: Int) {
     getMakeForManufacturer(searchTerm: $searchTerm) {
       makeId
       makeName
       manufacturerName
     }
     users(userId: $userId) {
+      user_id
       first_name
       last_name
       favorite_manufactures
@@ -76,15 +85,16 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-interface FavoriteIdsType {
-  id: number;
-  manufacturerName: string;
+interface FavoriteManufacturerType {
+  id?: number;
+  manufacturerName?: string;
 }
 
 const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
-  const [favoriteManufacturer, setFavoriteIds] = useState<FavoriteIdsType[]>(
-    [],
-  );
+  const [favoriteManufacturer, setFavoriteManufacturer] = useState<
+    FavoriteManufacturerType[]
+  >([]);
+  const isFirstRender = useRef(true);
 
   const handleCheckboxChange = (makeId: number, manufacturerName: string) => {
     if (
@@ -92,11 +102,11 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
         (f) => f.id === makeId && f.manufacturerName === manufacturerName,
       )
     ) {
-      setFavoriteIds((prevFav) => {
+      setFavoriteManufacturer((prevFav) => {
         return [...prevFav, { id: makeId, manufacturerName }];
       });
     } else {
-      setFavoriteIds((prevFav) =>
+      setFavoriteManufacturer((prevFav) =>
         prevFav.filter(
           (f) => f.id !== makeId || f.manufacturerName !== manufacturerName,
         ),
@@ -117,6 +127,12 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   const [updateUserFavorites] = useMutation(MUTATION_QUERY);
 
   useEffect(() => {
+    // To stop it from calling the mutation with an empty array
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     //debouncing checkbox click by 500ms
     const timer = setTimeout(() => {
       const manufacturers = favoriteManufacturer.map(
@@ -133,16 +149,35 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
     return () => clearTimeout(timer);
   }, [favoriteManufacturer, updateUserFavorites]);
 
+  useEffect(() => {
+    if (data) {
+      const favoritesArray: FavoriteManufacturerType[] = [];
+      data.users.map((user) => {
+        user.favorite_manufactures.map((fm) => {
+          // Splitting the composite ID
+          const splitStrings = fm.replaceAll("\\", "").split(":");
+          favoritesArray.push({
+            id: parseInt(splitStrings[0]),
+            manufacturerName: splitStrings[1],
+          });
+        });
+        setFavoriteManufacturer(favoritesArray);
+      });
+    }
+  }, [data]);
+
+  useEffect(() => {
+    // DEBUGGING
+    console.log(
+      { data, favoriteManufacturer },
+      // favoriteManufacturer.map((f) => `${f.id} - ${f.manufacturerName}`),
+    );
+  }, [data, favoriteManufacturer]);
+
   if (error) return <p>Error : {error.message}</p>;
   if (searchTerm && !loading && !data) return <p>Data is undefined</p>;
   if (data && data.getMakeForManufacturer.length === 0)
     return "No Results Found";
-
-  // DEBUGGING
-  console.log(
-    data,
-    // favoriteManufacturer.map((f) => `${f.id} - ${f.manufacturerName}`),
-  );
 
   return (
     !loading &&
@@ -171,7 +206,9 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
                   <Checkbox
                     icon={<FavoriteBorder />}
                     checkedIcon={<Favorite />}
-                    slotProps={{ input: { "aria-label": "Favorite checkbox" } }}
+                    slotProps={{
+                      input: { "aria-label": "Favorite checkbox" },
+                    }}
                     checked={favoriteManufacturer.some(
                       (f) =>
                         f.id === d.makeId &&

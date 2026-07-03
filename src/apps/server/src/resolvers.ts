@@ -135,12 +135,19 @@ export const resolvers = {
         });
       }
     },
-    users: async (_: unknown, { userId }: { userId?: string }) => {
+    users: async (_: unknown, { userId }: { userId?: number }) => {
       try {
         const result = userId
           ? await db.query("SELECT * FROM users WHERE user_id = $1", [userId])
           : await db.query("SELECT * FROM users");
-        return result.rows;
+        return result.rows.map((row) => {
+          return {
+            ...row,
+            favorite_manufactures: Array.isArray(row.favorite_manufactures)
+              ? row.favorite_manufactures
+              : [],
+          };
+        });
       } catch (error) {
         throw new GraphQLError(`Internal Server Error - ${error}`, {
           extensions: { code: "INTERNAL_SERVER_ERROR" },
@@ -190,13 +197,6 @@ export const resolvers = {
         favoriteManufacturer: string[];
       },
     ) => {
-      console.log(
-        "%c%s",
-        "color: #7f7700",
-        "MUTATION FUNC CALLED",
-        userId,
-        favoriteManufacturer,
-      );
       try {
         if (!userId || !favoriteManufacturer) {
           throw new GraphQLError(
@@ -208,9 +208,9 @@ export const resolvers = {
         }
         await db.query(
           `UPDATE users
-           SET  favorite_manufactures = $1
+           SET favorite_manufactures = COALESCE(favorite_manufactures, '{}'::text[]) || $1::text[]
            WHERE user_id = $2;`,
-          [favoriteManufacturer, userId],
+          [favoriteManufacturer, userId], // favoriteManufacturer can now safely be a JavaScript Array
         );
         return true;
       } catch (error) {
