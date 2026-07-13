@@ -1,0 +1,37 @@
+# =========================================
+# Stage: Development (React.js App)
+# =========================================
+ARG NODE_VERSION=24.14.0-alpine
+
+FROM node:${NODE_VERSION} AS dev
+ 
+# Enable corepack so the pnpm version pinned for this repo is available
+RUN corepack enable
+
+# Set working directory inside the container
+WORKDIR /app
+ 
+# Copy package files
+COPY package*.json pnpm-*.yaml ./
+
+ 
+# Install dependencies
+RUN pnpm install
+ 
+# Copy rest of the source code
+COPY . .
+ 
+ENV CI=true
+
+# Ensure the "node" user owns the application files
+RUN chown -R node:node /app
+ 
+# Switch to the built-in non-root "node" user
+USER node
+ 
+# Expose Vite dev server and Express/GraphQL server ports
+EXPOSE 5173
+EXPOSE 3001
+ 
+# Run Vite in dev mode, accessible outside the container
+CMD ["pnpm", "run", "dev", "--", "--host", "0.0.0.0"]
