@@ -1,5 +1,4 @@
 import { Typography } from "@mui/material";
-import SearchInput from "./SearchInput";
 
 import { useParams } from "react-router";
 import DisplayDetailsForMake from "./DisplayDetailsForMake";
@@ -8,10 +7,6 @@ import DisplayDetailsForMake from "./DisplayDetailsForMake";
 
 const GetDetailsByMakeID = (/* props: Props */) => {
   const { makeId } = useParams();
-
-  const handleSearchClick = (searchTerm?: string) => {
-    return searchTerm ? console.log(searchTerm) : null;
-  };
 
   return (
     <>

@@ -1,7 +1,6 @@
 import { TextField, Button } from "@mui/material";
 import { Box } from "@mui/system";
-import { useRef, useState } from "react";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { useState } from "react";
 import SendIcon from "@mui/icons-material/Send";
 
 type Props = {
@@ -29,20 +28,26 @@ const SearchInput = ({ placeholder, onSearch, loading }: Props) => {
           fullWidth
         />
         <Box sx={{ display: "flex", gap: 2, justifyContent: "center", my: 2 }}>
-          <Button
+          {/* <Button
             aria-label="search-by-name-clear-button"
-            color="error"
             endIcon={<DeleteForeverIcon />}
             disabled={loading}
             size="large"
             type="reset"
             variant="outlined"
+            color="error"
+            sx={{
+              color: "#F76464",
+            }}
           >
             Clear
-          </Button>
+          </Button> */}
           <Button
             aria-label="search-by-name-submit-button"
-            color="success"
+            sx={{
+              background: "#175ca0",
+              color: "#FFFFFF",
+            }}
             endIcon={<SendIcon />}
             loading={loading}
             disabled={!searchTerm.trim()}
@@ -50,6 +55,7 @@ const SearchInput = ({ placeholder, onSearch, loading }: Props) => {
             size="large"
             type="submit"
             variant="contained"
+            fullWidth
           >
             Search
           </Button>

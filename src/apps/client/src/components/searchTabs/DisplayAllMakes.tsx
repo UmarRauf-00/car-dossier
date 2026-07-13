@@ -10,6 +10,7 @@ import {
   TableHead,
   TableRow,
   Checkbox,
+  Stack,
 } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 
@@ -22,6 +23,8 @@ import {
 } from "react";
 
 import { Link } from "react-router";
+import { Box } from "@mui/system";
+import GetClerkUser from "../../clerkHooks";
 
 interface makeForManufacturerType {
   makeId: number;
@@ -31,8 +34,9 @@ interface makeForManufacturerType {
 
 interface usersType {
   user_id: number;
-  first_name: string;
-  last_name: string;
+  // first_name: string;
+  // last_name: string;
+  email_address: string;
   favorite_manufactures: string[];
 }
 
@@ -51,8 +55,7 @@ const QUERY: TypedDocumentNode<
     }
     users(userId: $userId) {
       user_id
-      first_name
-      last_name
+      email_address
       favorite_manufactures
     }
   }
@@ -182,48 +185,54 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   return (
     !loading &&
     data && (
-      <TableContainer>
-        <Table stickyHeader sx={{ minWidth: 500 }}>
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>MakeId & Make</StyledTableCell>
-              <StyledTableCell>Manufacturer</StyledTableCell>
-              <StyledTableCell>Favorite</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.getMakeForManufacturer.map((d) => (
-              <TableRow key={d.makeId + d.manufacturerName}>
-                <TableCell component="th" scope="row" sx={{ minWidth: 400 }}>
-                  <Link to={`/makeDetails/${d.makeId}`}>
-                    {d.makeId} - {d.makeName}
-                  </Link>
-                </TableCell>
-                <TableCell component="th" scope="row" sx={{ minWidth: 550 }}>
-                  {d.manufacturerName}
-                </TableCell>
-                <TableCell component="th" scope="row" sx={{ minWidth: 100 }}>
-                  <Checkbox
-                    icon={<FavoriteBorder />}
-                    checkedIcon={<Favorite />}
-                    slotProps={{
-                      input: { "aria-label": "Favorite checkbox" },
-                    }}
-                    checked={favoriteManufacturer.some(
-                      (f) =>
-                        f.id === d.makeId &&
-                        f.manufacturerName === d.manufacturerName,
-                    )}
-                    onChange={() =>
-                      handleCheckboxChange(d.makeId, d.manufacturerName)
-                    }
-                  />
-                </TableCell>
+      <Stack>
+        <Box>
+          <GetClerkUser />
+          {data.users.map((u) => u.email_address)}
+        </Box>
+        <TableContainer>
+          <Table stickyHeader sx={{ minWidth: 500 }}>
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>MakeId & Make</StyledTableCell>
+                <StyledTableCell>Manufacturer</StyledTableCell>
+                <StyledTableCell>Favorite</StyledTableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {data.getMakeForManufacturer.map((d) => (
+                <TableRow key={d.makeId + d.manufacturerName}>
+                  <TableCell component="th" scope="row" sx={{ minWidth: 400 }}>
+                    <Link to={`/makeDetails/${d.makeId}`}>
+                      {d.makeId} - {d.makeName}
+                    </Link>
+                  </TableCell>
+                  <TableCell component="th" scope="row" sx={{ minWidth: 550 }}>
+                    {d.manufacturerName}
+                  </TableCell>
+                  <TableCell component="th" scope="row" sx={{ minWidth: 100 }}>
+                    <Checkbox
+                      icon={<FavoriteBorder />}
+                      checkedIcon={<Favorite />}
+                      slotProps={{
+                        input: { "aria-label": "Favorite checkbox" },
+                      }}
+                      checked={favoriteManufacturer.some(
+                        (f) =>
+                          f.id === d.makeId &&
+                          f.manufacturerName === d.manufacturerName,
+                      )}
+                      onChange={() =>
+                        handleCheckboxChange(d.makeId, d.manufacturerName)
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Stack>
     )
   );
 };

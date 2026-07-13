@@ -2,11 +2,6 @@ import { GraphQLError } from "graphql";
 import { getAllManufacturers, nhtsaBaseUrl } from "./helpers/const";
 import db from "./config/db";
 
-interface AllMakesResponseType {
-  Make_ID: number;
-  Make_Name: string;
-}
-
 export interface AllManufacturersType {
   Country: string;
   Mfr_CommonName: string;
@@ -138,8 +133,13 @@ export const resolvers = {
     users: async (_: unknown, { userId }: { userId?: number }) => {
       try {
         const result = userId
-          ? await db.query("SELECT * FROM users WHERE user_id = $1", [userId])
-          : await db.query("SELECT * FROM users");
+          ? await db.query(
+              "SELECT user_id, email_address, favorite_manufactures FROM users WHERE user_id = $1",
+              [userId],
+            )
+          : await db.query(
+              "SELECT user_id, email_address, favorite_manufactures FROM users",
+            );
         return result.rows.map((row) => {
           return {
             ...row,

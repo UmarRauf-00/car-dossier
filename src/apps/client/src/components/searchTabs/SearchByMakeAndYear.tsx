@@ -1,7 +1,7 @@
 // type Props = {};
 
 import { TextField, Button, Typography } from "@mui/material";
-import { Box, textAlign } from "@mui/system";
+import { Box } from "@mui/system";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import SendIcon from "@mui/icons-material/Send";
 

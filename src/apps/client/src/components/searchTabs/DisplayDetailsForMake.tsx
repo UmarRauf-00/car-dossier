@@ -10,12 +10,6 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { Box } from "@mui/system";
-import { useEffect, type Dispatch, type SetStateAction } from "react";
-
-import { Link, useNavigate } from "react-router";
-import type { GetModelsForMakeIdType } from "../../../../server/src/resolvers";
-
 type GetModelsForMakeId = {
   makeId: number;
   modelId: number;

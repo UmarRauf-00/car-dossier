@@ -5,13 +5,12 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import SearchByName from "./SearchByName";
-import GetDetailsByMakeID from "./GetDetailsByMakeID";
 import SearchByMakeAndYear from "./SearchByMakeAndYear";
 
 const SearchTabs = () => {
   const [value, setValue] = React.useState("1");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
@@ -30,8 +29,7 @@ const SearchTabs = () => {
               "& .Mui-selected": {
                 background: "#175ca0",
                 color: "#FFFFFF",
-                borderTop: "1px solid #cbe5ff",
-                boxShadow: "0px 1px 3px #076ccb",
+                borderTop: "1px solid #49739d",
               },
             }}
           >

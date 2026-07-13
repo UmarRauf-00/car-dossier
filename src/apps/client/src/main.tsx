@@ -10,6 +10,7 @@ import { theme } from "./theme.ts";
 import { port } from "./helpers/const.tsx";
 import { BrowserRouter, Route, Routes } from "react-router";
 import GetDetailsByMakeID from "./components/searchTabs/GetDetailsByMakeID.tsx";
+import { ClerkProvider } from "@clerk/react-router";
 
 const client = new ApolloClient({
   link: new HttpLink({
@@ -21,21 +22,25 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ApolloProvider client={client}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline /> {/* MUI's CSS reset — replaces what Vite added */}
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<App />} />
-            <Route
-              path="/makeDetails/:makeId"
-              element={<GetDetailsByMakeID />}
-            />
-          </Routes>
-        </BrowserRouter>
-      </ThemeProvider>
-    </ApolloProvider>
+    <BrowserRouter>
+      <ClerkProvider publishableKey={publishableKey}>
+        <ApolloProvider client={client}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Routes>
+              <Route path="/" element={<App />} />
+              <Route
+                path="/makeDetails/:makeId"
+                element={<GetDetailsByMakeID />}
+              />
+            </Routes>
+          </ThemeProvider>
+        </ApolloProvider>
+      </ClerkProvider>
+    </BrowserRouter>
   </StrictMode>,
 );

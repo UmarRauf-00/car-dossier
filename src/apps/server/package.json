@@ -19,6 +19,7 @@
   },
   "type": "module",
   "devDependencies": {
+    "@clerk/react": "^6.11.3",
     "@types/cors": "^2.8.19",
     "@types/pg": "^8.20.0",
     "nodemon": "^3.1.14",

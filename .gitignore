@@ -13,8 +13,12 @@ dist-ssr
 *.local
 .claude
 .env
+.pnpm-store
+docker_test_db
+
 
 # Editor directories and files
+.vscode
 .vscode/*
 !.vscode/extensions.json
 .idea

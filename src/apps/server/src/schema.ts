@@ -28,7 +28,8 @@ export const typeDefs = `#graphql
   type Users {
     user_id: Int!,
     first_name: String!,
-    last_name: String!
+    last_name: String!,
+    email_address: String!
     favorite_manufactures: [String]
   }
   
