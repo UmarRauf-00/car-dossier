@@ -1,5 +1,5 @@
 # =========================================
-# Stage 1: Build the React (Vite) Application
+# Builder: Build the React (Vite) Application
 # =========================================
  
 ARG NODE_VERSION=24.14.0-alpine
@@ -15,22 +15,36 @@ RUN corepack enable
 # Set the working directory inside the container
 WORKDIR /app
 
-
 # Copy the full workspace source (pnpm needs every workspace member's
 # package.json present to resolve the workspace graph correctly)
 COPY . .
 
-
 # Install project dependencies using a frozen lockfile (ensures a clean, reproducible install)
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 
+# Vite bakes VITE_* values into the static bundle at build time, so they
+# must be supplied here as build args (not as a runtime `environment:` -
+# by the time the container starts, the JS is already compiled).
+ARG VITE_CLERK_PUBLISHABLE_KEY
+ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
+
+ARG VITE_SERVER_PORT
+ENV VITE_SERVER_PORT=$VITE_SERVER_PORT
+
+# Optional: set to the API's real URL in deployed environments, where
+# client and server won't share "localhost". Left unset locally so the
+# localhost:VITE_SERVER_PORT fallback in helpers/const.ts applies.
+ARG VITE_GRAPHQL_URL
+ENV VITE_GRAPHQL_URL=$VITE_GRAPHQL_URL
+
 # Build the React.js application (outputs to /app/dist)
-RUN pnpm run build
+RUN pnpm run buildClient
  
  
 # =========================================
-# Stage 2: Serve static files with Node.js + `serve`
+# Runner: Serve static files with Node.js + `serve`
 # =========================================
+
 FROM node:${NODE_VERSION} AS runner
 
 

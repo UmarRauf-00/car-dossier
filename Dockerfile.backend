@@ -1,0 +1,77 @@
+# =========================================
+# Builder: Build the Express/Node server
+# =========================================
+ 
+ARG NODE_VERSION=24.14.0-alpine
+
+
+# Use a lightweight Node.js image for building (customizable via ARG)
+FROM node:${NODE_VERSION} AS builder
+
+
+# Enable corepack so the pnpm version pinned for this repo is available
+RUN corepack enable
+
+
+# Set the working directory inside the container
+WORKDIR /app
+
+
+# Copy the full workspace source (pnpm needs every workspace member's
+# package.json present to resolve the workspace graph correctly)
+COPY . .
+
+
+# Install project dependencies using a frozen lockfile (ensures a clean, reproducible install)
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
+
+
+# Build backend (server) (outputs to /app/src/apps/server/dist)
+RUN pnpm run buildServer
+
+ 
+# =========================================
+# Runner: Copy the required files and start Express/Node server
+# =========================================
+
+FROM node:${NODE_VERSION} AS runner
+
+
+# Set the environment to production for smaller + optimized installs
+ENV NODE_ENV=production
+
+
+# Set the working directory inside the container
+WORKDIR /app
+
+
+# Copy the production build output from the builder stage. The server's
+# node_modules holds pnpm symlinks that point (via a relative path) into
+# the workspace root's .pnpm store, so both are copied preserving their
+# original relative depth for those symlinks to keep resolving correctly.
+COPY --link --from=builder /app/node_modules/.pnpm ./node_modules/.pnpm
+COPY --link --from=builder /app/src/apps/server/node_modules ./src/apps/server/node_modules
+COPY --link --from=builder /app/src/apps/server/package.json ./src/apps/server/package.json
+COPY --link --from=builder /app/src/apps/server/dist ./src/apps/server/dist
+
+
+# Installing curl to help Server perform healthChecks
+RUN apk add --no-cache curl
+
+
+# Run the container as a non-root user for security best practices
+USER node
+
+
+# Run from the server's own directory so its node_modules symlinks
+# (relative, pointing up into the workspace root's .pnpm store) resolve
+# the same way they did in the builder stage.
+WORKDIR /app/src/apps/server
+
+
+# Expose port 3001 (Port ExpressJS listens to)
+EXPOSE 3001
+
+
+# Start ExpressJs Server
+CMD ["node", "dist/index.js"]

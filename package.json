@@ -7,7 +7,9 @@
     "src/apps/*"
   ],
   "scripts": {
-    "build": "pnpm --filter client build",
+    "build": "pnpm build && pnpm --filter client build && pnpm --filter server build",
+    "buildClient": "pnpm --filter client build",
+    "buildServer": "pnpm --filter server build",
     "lint": "eslint .",
     "preview": "pnpm --filter client preview",
     "dev": "concurrently \"pnpm --filter server dev\" \"pnpm --filter client dev\""

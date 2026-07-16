@@ -26,11 +26,5 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src",
-    "../server/src/*",
-    "../server/src/helpers/const.tsx",
-    "../server/src/config/db.ts",
-    "src/components/searchTabs/.tsx"
-  ]
+  "include": ["src"]
 }

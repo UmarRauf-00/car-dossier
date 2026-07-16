@@ -2,19 +2,19 @@ import express, { type Express, type Response, type Request } from "express";
 import { ApolloServer, type BaseContext } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 
-import { typeDefs } from "./schema";
-import { resolvers } from "./resolvers";
+import { typeDefs } from "./schema.js";
+import { resolvers } from "./resolvers.js";
 
 import cors from "cors";
-import { port } from "./helpers/const";
-import db from "./config/db";
+import { port, clientOrigin } from "./helpers/const.js";
+import db from "./config/db.js";
 
 const app: Express = express();
 
 // Middleware to parse json
 app.use(express.json());
 
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: clientOrigin }));
 
 // Apollo Server tings
 const server = new ApolloServer<BaseContext>({
@@ -62,6 +62,33 @@ app.post("/api/addUser", async (req: Request, res: Response) => {
         .json({ error: "POST req failed - " + err.message });
     }
     res.status(500).json({ error: "Server error adding user to users table" });
+  }
+});
+
+// Helper to check critical dependencies like database connections
+const checkDependencies = async () => {
+  try {
+    // Executes a lightweight query to verify the connection
+    await db.query("SELECT 1");
+    return true;
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error("PostgreSQL connection failed:", err.message);
+    }
+
+    return false;
+  }
+};
+
+// Health-Check
+app.get("/ready", async (_req: Request, res: Response) => {
+  const isReady = await checkDependencies();
+
+  if (isReady) {
+    res.status(200).json({ status: "Ready" });
+  } else {
+    // Service is temporarily unavailable (e.g., DB is connecting)
+    res.status(503).json({ status: "Not Ready" });
   }
 });
 

@@ -7,14 +7,14 @@ import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { theme } from "./theme.ts";
-import { port } from "./helpers/const.tsx";
+import { graphqlServer } from "./helpers/const.ts";
 import { BrowserRouter, Route, Routes } from "react-router";
 import GetDetailsByMakeID from "./components/searchTabs/GetDetailsByMakeID.tsx";
 import { ClerkProvider } from "@clerk/react-router";
 
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: `http://localhost:${port}/graphql`,
+    uri: graphqlServer,
     headers: {
       "content-type": "application/json",
     },

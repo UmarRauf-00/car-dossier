@@ -1,6 +1,7 @@
 import { GraphQLError } from "graphql";
-import { getAllManufacturers, nhtsaBaseUrl } from "./helpers/const";
-import db from "./config/db";
+import { getAllManufacturers, nhtsaBaseUrl } from "./helpers/const.js";
+import db from "./config/db.js";
+import type { QueryResultRow } from "pg";
 
 export interface AllManufacturersType {
   Country: string;
@@ -22,10 +23,10 @@ export interface GetModelsForMakeIdType {
   Model_Name: string;
 }
 
-export interface Users {
-  first_name: string;
-  last_name: string;
-  favorite_manufactures: string[];
+export interface UserRow {
+  user_id: string;
+  email_address: string;
+  favorite_manufactures?: string[];
 }
 
 interface GetMakeForManufacturerType {
@@ -133,11 +134,11 @@ export const resolvers = {
     users: async (_: unknown, { userId }: { userId?: number }) => {
       try {
         const result = userId
-          ? await db.query(
+          ? await db.query<UserRow>(
               "SELECT user_id, email_address, favorite_manufactures FROM users WHERE user_id = $1",
               [userId],
             )
-          : await db.query(
+          : await db.query<UserRow>(
               "SELECT user_id, email_address, favorite_manufactures FROM users",
             );
         return result.rows.map((row) => {
