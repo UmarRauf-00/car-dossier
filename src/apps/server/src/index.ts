@@ -34,6 +34,18 @@ app.post(
         );
       }
 
+      if (evt.type === "user.updated") {
+        const { id, email_addresses, first_name, last_name } = evt.data;
+        const email = email_addresses[0]?.email_address;
+
+        await db.query(
+          `UPDATE users
+           SET email_address = $2, first_name = $3, last_name = $4
+           WHERE clerk_user_id = $1;`,
+          [id, email, first_name, last_name],
+        );
+      }
+
       res.send("Webhook received");
     } catch (err) {
       console.error("Error verifying webhook:", err);
