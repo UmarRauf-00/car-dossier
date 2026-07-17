@@ -14,14 +14,14 @@ const pool = new Pool({
 
 interface DatabaseClient {
   query: <T extends QueryResultRow>(
-    text: string,
+    query: string,
     params?: unknown[],
   ) => Promise<pg.QueryResult<T>>;
 }
 
 const db: DatabaseClient = {
-  query: <T extends QueryResultRow>(text: string, params?: unknown[]) =>
-    pool.query<T>(text, params),
+  query: <T extends QueryResultRow>(query: string, params?: unknown[]) =>
+    pool.query<T>(query, params),
 };
 
 export default db;

@@ -1,6 +1,7 @@
 import express, { type Express, type Response, type Request } from "express";
 import { ApolloServer, type BaseContext } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
+import { verifyWebhook } from "@clerk/express/webhooks";
 
 import { typeDefs } from "./schema.js";
 import { resolvers } from "./resolvers.js";
@@ -10,6 +11,36 @@ import { port, clientOrigin } from "./helpers/const.js";
 import db from "./config/db.js";
 
 const app: Express = express();
+
+// Upon a new user Sign-up on Clerk, Clerk will send a POST req to this webhook to add that user to the users table in postgres.
+// Clerk webhook signature verification needs the raw body, so this route
+// is registered before the global express.json() parser below.
+app.post(
+  "/webhooks/clerk",
+  express.raw({ type: "application/json" }),
+  async (req: Request, res: Response) => {
+    try {
+      const evt = await verifyWebhook(req);
+
+      if (evt.type === "user.created") {
+        const { id, email_addresses, first_name, last_name } = evt.data;
+        const email = email_addresses[0]?.email_address;
+
+        await db.query(
+          `INSERT INTO users (clerk_user_id, email_address, first_name, last_name)
+           VALUES ($1, $2, $3, $4)
+           ON CONFLICT (clerk_user_id) DO NOTHING;`,
+          [id, email, first_name, last_name],
+        );
+      }
+
+      res.send("Webhook received");
+    } catch (err) {
+      console.error("Error verifying webhook:", err);
+      res.status(400).send("Error verifying webhook");
+    }
+  },
+);
 
 // Middleware to parse json
 app.use(express.json());

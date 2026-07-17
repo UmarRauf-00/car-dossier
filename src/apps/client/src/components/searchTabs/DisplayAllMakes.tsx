@@ -13,6 +13,7 @@ import {
   Stack,
 } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import { useUser } from "@clerk/react";
 
 import {
   useEffect,
@@ -34,8 +35,8 @@ interface makeForManufacturerType {
 
 interface usersType {
   user_id: number;
-  // first_name: string;
-  // last_name: string;
+  first_name: string;
+  last_name: string;
   email_address: string;
   favorite_manufactures: string[];
 }
@@ -45,29 +46,32 @@ const QUERY: TypedDocumentNode<
     getMakeForManufacturer: makeForManufacturerType[];
     users: usersType[];
   },
-  { searchTerm?: string; userId?: number }
+  { searchTerm?: string; clerkUserId?: string }
 > = gql`
-  query getMake($searchTerm: String!, $userId: Int) {
+  query getMake($searchTerm: String!, $clerkUserId: String) {
     getMakeForManufacturer(searchTerm: $searchTerm) {
       makeId
       makeName
       manufacturerName
     }
-    users(userId: $userId) {
-      user_id
-      email_address
+    users(clerkUserId: $clerkUserId) {
       favorite_manufactures
     }
   }
 `;
 
+interface updateUserQueryType {
+  clerkUserId: string;
+  favoriteManufacturer: string[];
+}
+
 const MUTATION_QUERY: TypedDocumentNode<
-  { updateUser: { userId: number; favoriteManufacturer: string[] } },
-  { userId: number; favoriteManufacturer: string[] }
+  { updateUser: updateUserQueryType },
+  updateUserQueryType
 > = gql`
-  mutation updateUser($userId: Int, $favoriteManufacturer: [String]) {
+  mutation updateUser($clerkUserId: String, $favoriteManufacturer: [String]) {
     updateUserFavorites(
-      userId: $userId
+      clerkUserId: $clerkUserId
       favoriteManufacturer: $favoriteManufacturer
     )
   }
@@ -94,6 +98,8 @@ interface FavoriteManufacturerType {
 }
 
 const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
+  const { user } = useUser();
+  const clerkUser = user; // just an alias for clarity on which user object is being used
   const [favoriteManufacturer, setFavoriteManufacturer] = useState<
     FavoriteManufacturerType[]
   >([]);
@@ -118,7 +124,7 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   };
 
   const { loading, error, data } = useQuery(QUERY, {
-    variables: { searchTerm },
+    variables: { searchTerm, clerkUserId: clerkUser?.id },
     fetchPolicy: "network-only",
     skip: !searchTerm,
   });
@@ -136,6 +142,8 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
       return;
     }
 
+    if (!clerkUser || !clerkUser?.id) return;
+
     //debouncing checkbox click by 500ms
     const timer = setTimeout(() => {
       const manufacturers = favoriteManufacturer.map(
@@ -143,13 +151,14 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
       );
       updateUserFavorites({
         variables: {
-          userId: 2, // This needs to be replaced with a logged in user's user_ida
+          clerkUserId: clerkUser.id,
           favoriteManufacturer: manufacturers,
         },
       });
     }, 500);
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favoriteManufacturer, updateUserFavorites]);
 
   useEffect(() => {
@@ -171,10 +180,8 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
 
   useEffect(() => {
     // DEBUGGING
-    console.log(
-      { data, favoriteManufacturer },
-      // favoriteManufacturer.map((f) => `${f.id} - ${f.manufacturerName}`),
-    );
+    console.log("%c⧭", "color: #ffa280", { data /* favoriteManufacturer */ });
+    // favoriteManufacturer.map((f) => `${f.id} - ${f.manufacturerName}`),
   }, [data, favoriteManufacturer]);
 
   if (error) return <p>Error : {error.message}</p>;
@@ -188,7 +195,6 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
       <Stack>
         <Box>
           <GetClerkUser />
-          {data.users.map((u) => u.email_address)}
         </Box>
         <TableContainer>
           <Table stickyHeader sx={{ minWidth: 500 }}>

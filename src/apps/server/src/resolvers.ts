@@ -1,7 +1,6 @@
 import { GraphQLError } from "graphql";
 import { getAllManufacturers, nhtsaBaseUrl } from "./helpers/const.js";
 import db from "./config/db.js";
-import type { QueryResultRow } from "pg";
 
 export interface AllManufacturersType {
   Country: string;
@@ -131,16 +130,27 @@ export const resolvers = {
         });
       }
     },
-    users: async (_: unknown, { userId }: { userId?: number }) => {
+    users: async (_: unknown, { clerkUserId }: { clerkUserId?: string }) => {
+      console.log("%c⧭", "color: #364cd9", "users", { clerkUserId });
+      // return [
+      //   {
+      //     mail_address: "urauf101@gmail.com",
+      //     favorite_manufactures: ["474:HONDA MOTOR CO., LTD."],
+      //   },
+      // ];
       try {
-        const result = userId
+        const result = clerkUserId
           ? await db.query<UserRow>(
-              "SELECT user_id, email_address, favorite_manufactures FROM users WHERE user_id = $1",
-              [userId],
+              "SELECT email_address, favorite_manufactures FROM users WHERE clerk_user_id = $1",
+              [clerkUserId],
             )
           : await db.query<UserRow>(
-              "SELECT user_id, email_address, favorite_manufactures FROM users",
+              "SELECT email_address, favorite_manufactures FROM users",
             );
+
+        //DEBUGGING
+        console.log("result", result.rows);
+
         return result.rows.map((row) => {
           return {
             ...row,
@@ -191,17 +201,17 @@ export const resolvers = {
     updateUserFavorites: async (
       _: unknown,
       {
-        userId,
+        clerkUserId,
         favoriteManufacturer,
       }: {
-        userId: number;
+        clerkUserId: string;
         favoriteManufacturer: string[];
       },
     ) => {
       try {
-        if (!userId || !favoriteManufacturer) {
+        if (!clerkUserId || !favoriteManufacturer) {
           throw new GraphQLError(
-            `Missing properties to make the update request. userId: ${userId} & favoriteManufacturer: ${favoriteManufacturer}`,
+            `Missing properties to make the update request. clerkUserId: ${clerkUserId} & favoriteManufacturer: ${favoriteManufacturer}`,
             {
               extensions: { code: "BAD_USER_INPUT" },
             },
@@ -210,8 +220,8 @@ export const resolvers = {
         await db.query(
           `UPDATE users
            SET favorite_manufactures = COALESCE(favorite_manufactures, '{}'::text[]) || $1::text[]
-           WHERE user_id = $2;`,
-          [favoriteManufacturer, userId], // favoriteManufacturer can now safely be a JavaScript Array
+           WHERE clerk_user_id = $2;`,
+          [favoriteManufacturer, clerkUserId], // favoriteManufacturer can now safely be a JavaScript Array
         );
         return true;
       } catch (error) {

@@ -27,6 +27,7 @@ export const typeDefs = `#graphql
 
   type Users {
     user_id: Int!,
+    clerk_user_id: String,
     first_name: String!,
     last_name: String!,
     email_address: String!
@@ -37,10 +38,14 @@ export const typeDefs = `#graphql
     allManufacturers: [AllManufacturers!]!
     getMakeForManufacturer(searchTerm: String!): [GetMakeForManufacturer!]!
     getModelsForMakeId(makeId: Int!): [GetModelsForMakeId!]!
-    users(userId: Int): [Users]!
+    users(clerkUserId: String): [Users]!
   }
 
+
   type Mutation {
-    updateUserFavorites(userId: Int, favoriteManufacturer: [String]) : Boolean
+    updateUserFavorites(    
+      clerkUserId: String,
+      favoriteManufacturer: [String]
+    ) : Boolean
   }
 `;
