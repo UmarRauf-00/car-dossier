@@ -15,7 +15,7 @@ dist-ssr
 .env
 .pnpm-store
 docker_test_db
-
+*.tsbuildinfo
 
 # Editor directories and files
 .vscode

@@ -7,10 +7,16 @@ type Props = {
   placeholder?: string;
   onSearch: (value?: string) => void;
   loading: boolean;
+  searchTermValue?: string;
 };
 
-const SearchInput = ({ placeholder, onSearch, loading }: Props) => {
-  const [searchTerm, setSearchTerm] = useState("");
+const SearchInput = ({
+  placeholder,
+  onSearch,
+  loading,
+  searchTermValue,
+}: Props) => {
+  const [searchTerm, setSearchTerm] = useState(searchTermValue ?? "");
 
   const searchBox = () => {
     return (
@@ -28,20 +34,6 @@ const SearchInput = ({ placeholder, onSearch, loading }: Props) => {
           fullWidth
         />
         <Box sx={{ display: "flex", gap: 2, justifyContent: "center", my: 2 }}>
-          {/* <Button
-            aria-label="search-by-name-clear-button"
-            endIcon={<DeleteForeverIcon />}
-            disabled={loading}
-            size="large"
-            type="reset"
-            variant="outlined"
-            color="error"
-            sx={{
-              color: "#F76464",
-            }}
-          >
-            Clear
-          </Button> */}
           <Button
             aria-label="search-by-name-submit-button"
             sx={{

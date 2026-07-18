@@ -11,6 +11,8 @@ import {
   TableRow,
   Checkbox,
   Stack,
+  Tooltip,
+  Alert,
 } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { useUser } from "@clerk/react";
@@ -24,8 +26,6 @@ import {
 } from "react";
 
 import { Link } from "react-router";
-import { Box } from "@mui/system";
-import GetClerkUser from "../../clerkHooks";
 
 interface makeForManufacturerType {
   makeId: number;
@@ -44,17 +44,21 @@ interface usersType {
 const QUERY: TypedDocumentNode<
   {
     getMakeForManufacturer: makeForManufacturerType[];
-    users: usersType[];
+    users?: usersType[];
   },
-  { searchTerm?: string; clerkUserId?: string }
+  { searchTerm?: string; clerkUserId?: string; isSignedIn: boolean }
 > = gql`
-  query getMake($searchTerm: String!, $clerkUserId: String) {
+  query getMake(
+    $searchTerm: String!
+    $clerkUserId: String
+    $isSignedIn: Boolean!
+  ) {
     getMakeForManufacturer(searchTerm: $searchTerm) {
       makeId
       makeName
       manufacturerName
     }
-    users(clerkUserId: $clerkUserId) {
+    users(clerkUserId: $clerkUserId) @include(if: $isSignedIn) {
       favorite_manufactures
     }
   }
@@ -98,7 +102,7 @@ interface FavoriteManufacturerType {
 }
 
 const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
-  const { user } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
   const clerkUser = user; // just an alias for clarity on which user object is being used
   const [favoriteManufacturer, setFavoriteManufacturer] = useState<
     FavoriteManufacturerType[]
@@ -124,9 +128,13 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   };
 
   const { loading, error, data } = useQuery(QUERY, {
-    variables: { searchTerm, clerkUserId: clerkUser?.id },
+    variables: {
+      searchTerm,
+      clerkUserId: clerkUser?.id,
+      isSignedIn: !!isSignedIn,
+    },
     fetchPolicy: "network-only",
-    skip: !searchTerm,
+    skip: !searchTerm || !isLoaded,
   });
 
   useEffect(() => {
@@ -162,7 +170,7 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   }, [favoriteManufacturer, updateUserFavorites]);
 
   useEffect(() => {
-    if (data) {
+    if (data?.users) {
       const favoritesArray: FavoriteManufacturerType[] = [];
       data.users.map((user) => {
         user.favorite_manufactures.map((fm) => {
@@ -185,17 +193,18 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   }, [data, favoriteManufacturer]);
 
   if (error) return <p>Error : {error.message}</p>;
-  if (searchTerm && !loading && !data) return <p>Data is undefined</p>;
+  if (searchTerm && !loading && !data) return;
   if (data && data.getMakeForManufacturer.length === 0)
-    return "No Results Found";
+    return (
+      <Alert variant="standard" severity="info">
+        No Results Found
+      </Alert>
+    );
 
   return (
     !loading &&
     data && (
       <Stack>
-        <Box>
-          <GetClerkUser />
-        </Box>
         <TableContainer>
           <Table stickyHeader sx={{ minWidth: 500 }}>
             <TableHead>
@@ -207,7 +216,7 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
             </TableHead>
             <TableBody>
               {data.getMakeForManufacturer.map((d) => (
-                <TableRow key={d.makeId + d.manufacturerName}>
+                <TableRow key={d.makeId + d.manufacturerName} hover>
                   <TableCell component="th" scope="row" sx={{ minWidth: 400 }}>
                     <Link to={`/makeDetails/${d.makeId}`}>
                       {d.makeId} - {d.makeName}
@@ -216,22 +225,35 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
                   <TableCell component="th" scope="row" sx={{ minWidth: 550 }}>
                     {d.manufacturerName}
                   </TableCell>
+
                   <TableCell component="th" scope="row" sx={{ minWidth: 100 }}>
-                    <Checkbox
-                      icon={<FavoriteBorder />}
-                      checkedIcon={<Favorite />}
-                      slotProps={{
-                        input: { "aria-label": "Favorite checkbox" },
-                      }}
-                      checked={favoriteManufacturer.some(
-                        (f) =>
-                          f.id === d.makeId &&
-                          f.manufacturerName === d.manufacturerName,
-                      )}
-                      onChange={() =>
-                        handleCheckboxChange(d.makeId, d.manufacturerName)
+                    <Tooltip
+                      title={
+                        isSignedIn
+                          ? "Favorite this manufacturer"
+                          : "Sign in to favorite a manufacturer"
                       }
-                    />
+                      data-testid="favorite-tooltip"
+                    >
+                      <span>
+                        <Checkbox
+                          icon={<FavoriteBorder />}
+                          checkedIcon={<Favorite />}
+                          disabled={!isSignedIn}
+                          slotProps={{
+                            input: { "aria-label": "Favorite checkbox" },
+                          }}
+                          checked={favoriteManufacturer.some(
+                            (f) =>
+                              f.id === d.makeId &&
+                              f.manufacturerName === d.manufacturerName,
+                          )}
+                          onChange={() =>
+                            handleCheckboxChange(d.makeId, d.manufacturerName)
+                          }
+                        />
+                      </span>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}

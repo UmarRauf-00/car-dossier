@@ -5,7 +5,6 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import SearchByName from "./SearchByName";
-import SearchByMakeAndYear from "./SearchByMakeAndYear";
 
 const SearchTabs = () => {
   const [value, setValue] = React.useState("1");
@@ -26,23 +25,18 @@ const SearchTabs = () => {
                 textTransform: "none",
                 paddingY: "20px",
               },
-              "& .Mui-selected": {
-                background: "#175ca0",
-                color: "#FFFFFF",
-                borderTop: "1px solid #49739d",
-              },
             }}
           >
             <Tab label="By Name" value="1" />
-            <Tab label="By Make & Year" value="2" />
+            {/* <Tab label="By Make & Year" value="2" /> */}
           </TabList>
         </Box>
         <TabPanel value="1">
           <SearchByName />
         </TabPanel>
-        <TabPanel value="2">
+        {/* <TabPanel value="2">
           <SearchByMakeAndYear />
-        </TabPanel>
+        </TabPanel> */}
       </TabContext>
     </Box>
   );

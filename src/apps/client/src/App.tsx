@@ -3,7 +3,7 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import WelcomePage from "./components/WelcomePage";
-import { AppBar, Box, Button, Toolbar } from "@mui/material";
+import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
 import {
   SignInButton,
   SignUpButton,
@@ -12,32 +12,40 @@ import {
 } from "@clerk/react-router";
 
 function App() {
-  const { isSignedIn } = useUser();
+  const { user, isSignedIn } = useUser();
 
   return (
     <>
       <AppBar
         position="static"
         sx={{
-          background: "#FFFFFF",
-          maxWidth: "20rem",
-          // position: "relative",
-          // right: 0,
-          // left: "764.2px",
-          // height: 0,
+          maxWidth: "14rem",
+          position: "absolute",
+          right: "49px",
+          top: "236px",
+          background: "linear-gradient(#FFFFFF10, #FFFFFF80)",
+          boxShadow: "none",
+          border: "none",
+          borderRadius: "4px 4px 0 0",
         }}
       >
-        <Toolbar sx={{ justifyContent: "center", gap: 5 }}>
+        <Toolbar sx={{ justifyContent: "center" }}>
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             {isSignedIn ? (
-              <UserButton />
+              <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                <Typography component="span" variant="body2">
+                  Welcome, {user.firstName || user.username}
+                </Typography>
+                <UserButton />
+              </Box>
             ) : (
               <>
                 <SignInButton>
                   <Button
                     name="sign-in-button"
                     variant="contained"
-                    sx={{ background: "#076ccb", color: "#FFFFFF" }}
+                    size="small"
+                    // sx={{ background: "#175ca0", color: "#FFFFFF" }}
                   >
                     Sign in
                   </Button>
@@ -46,7 +54,8 @@ function App() {
                   <Button
                     name="sign-up-button"
                     variant="contained"
-                    sx={{ background: "#076ccb", color: "#FFFFFF" }}
+                    size="small"
+                    // sx={{ background: "#175ca0", color: "#FFFFFF" }}
                   >
                     Sign up
                   </Button>
