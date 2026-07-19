@@ -205,7 +205,7 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
     !loading &&
     data && (
       <Stack>
-        <TableContainer>
+        <TableContainer sx={{ width: "100%" }}>
           <Table stickyHeader sx={{ minWidth: 500 }}>
             <TableHead>
               <TableRow>
@@ -217,16 +217,16 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
             <TableBody>
               {data.getMakeForManufacturer.map((d) => (
                 <TableRow key={d.makeId + d.manufacturerName} hover>
-                  <TableCell component="th" scope="row" sx={{ minWidth: 400 }}>
+                  <TableCell component="th" scope="row" sx={{ width: 400 }}>
                     <Link to={`/makeDetails/${d.makeId}`}>
                       {d.makeId} - {d.makeName}
                     </Link>
                   </TableCell>
-                  <TableCell component="th" scope="row" sx={{ minWidth: 550 }}>
+                  <TableCell component="th" scope="row" sx={{ width: 550 }}>
                     {d.manufacturerName}
                   </TableCell>
 
-                  <TableCell component="th" scope="row" sx={{ minWidth: 100 }}>
+                  <TableCell component="th" scope="row" sx={{ width: 100 }}>
                     <Tooltip
                       title={
                         isSignedIn
