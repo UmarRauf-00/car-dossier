@@ -219,9 +219,9 @@ export const resolvers = {
         }
         await db.query(
           `UPDATE users
-           SET favorite_manufactures = COALESCE(favorite_manufactures, '{}'::text[]) || $1::text[]
+           SET favorite_manufactures = $1::text[]
            WHERE clerk_user_id = $2;`,
-          [favoriteManufacturer, clerkUserId], // favoriteManufacturer can now safely be a JavaScript Array
+          [favoriteManufacturer, clerkUserId], // the client sends the full list, so replace rather than append
         );
         return true;
       } catch (error) {

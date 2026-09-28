@@ -107,9 +107,12 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   const [favoriteManufacturer, setFavoriteManufacturer] = useState<
     FavoriteManufacturerType[]
   >([]);
-  const isFirstRender = useRef(true);
+  // Only true after a checkbox click, so loading favorites from the server (or
+  // StrictMode re-running effects) never sends an empty list that wipes the DB.
+  const hasUserChanged = useRef(false);
 
   const handleCheckboxChange = (makeId: number, manufacturerName: string) => {
+    hasUserChanged.current = true;
     if (
       !favoriteManufacturer.find(
         (f) => f.id === makeId && f.manufacturerName === manufacturerName,
@@ -144,16 +147,14 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   const [updateUserFavorites] = useMutation(MUTATION_QUERY);
 
   useEffect(() => {
-    // To stop it from calling the mutation with an empty array
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    // Skip state changes that didn't come from a checkbox click
+    if (!hasUserChanged.current) return;
 
     if (!clerkUser || !clerkUser?.id) return;
 
     //debouncing checkbox click by 500ms
     const timer = setTimeout(() => {
+      hasUserChanged.current = false;
       const manufacturers = favoriteManufacturer.map(
         (f) => `${f.id}:${f.manufacturerName}`,
       );
