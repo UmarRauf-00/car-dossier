@@ -18,16 +18,18 @@ What I learned
 
 ## Tech stack
 
-- React 19 
+- React 19
 - Typescript
 - Vite
-- MUI 
+- MUI
 - Apollo Client
-- Node.js 
+- Node.js
 - Express
 - Apollo Server (GraphQL)
 - PostgreSQL (`pg`)
 - Clerk Auth
 - Docker / Docker Compose
 
-![Aritechture](https://drive.google.com/file/d/1hOBvMSfWWxtzHFpBcwZmCVc2XAScPdA7/view?usp=drive_link)
+## Aritechture Diagram
+
+![AritechtureDiagram](/public/artitechture_diagram.png)
