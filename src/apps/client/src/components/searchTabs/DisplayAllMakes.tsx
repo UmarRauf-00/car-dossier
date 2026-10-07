@@ -13,6 +13,8 @@ import {
   Stack,
   Tooltip,
   Alert,
+  Drawer,
+  Button,
 } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { useUser } from "@clerk/react";
@@ -26,6 +28,7 @@ import {
 } from "react";
 
 import { Link } from "react-router";
+import ChatUI from "../../ai-chat/ChatUI";
 
 interface makeForManufacturerType {
   makeId: number;
@@ -102,7 +105,8 @@ interface FavoriteManufacturerType {
 }
 
 const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
-  const { user, isSignedIn, isLoaded } = useUser();
+  const { user, isSignedIn } = useUser();
+  const [open, setOpen] = useState(false);
   const clerkUser = user; // just an alias for clarity on which user object is being used
   const [favoriteManufacturer, setFavoriteManufacturer] = useState<
     FavoriteManufacturerType[]
@@ -137,7 +141,7 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
       isSignedIn: !!isSignedIn,
     },
     fetchPolicy: "network-only",
-    skip: !searchTerm || !isLoaded,
+    skip: !searchTerm, // || !isLoaded,
   });
 
   useEffect(() => {
@@ -261,6 +265,10 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
             </TableBody>
           </Table>
         </TableContainer>
+        <Button onClick={() => setOpen(true)}>Open drawer</Button>
+        <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
+          <ChatUI vehicleData={data.getMakeForManufacturer} />
+        </Drawer>
       </Stack>
     )
   );

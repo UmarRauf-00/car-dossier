@@ -26,6 +26,7 @@
     "typescript-eslint": "^8.59.2"
   },
   "dependencies": {
+    "@chatscope/chat-ui-kit-styles": "^1.4.0",
     "graphql": "^16.14.2"
   }
 }
