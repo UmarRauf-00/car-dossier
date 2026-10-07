@@ -136,7 +136,7 @@ app.post("/api/anthropic_insights", async (req: Request, res: Response) => {
 
   try {
     const message = await anthropicClient.messages.create({
-      model: "claude-opus-5-5",
+      model: "claude-haiku-4-5",
       max_tokens: 1024,
       system: `You are a car expert. Answer questions using this vehicle data:\n<vehicle_data>\n${JSON.stringify(vehicleData, null, 2)}\n</vehicle_data>`,
       messages: [{ role: "user", content: userQuestion }],
