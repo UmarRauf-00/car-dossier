@@ -1,7 +1,9 @@
+import "./config/env.js";
 import express, { type Express, type Response, type Request } from "express";
 import { ApolloServer, type BaseContext } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { verifyWebhook } from "@clerk/express/webhooks";
+import Anthropic from "@anthropic-ai/sdk";
 
 import { typeDefs } from "./schema.js";
 import { resolvers } from "./resolvers.js";
@@ -9,6 +11,11 @@ import { resolvers } from "./resolvers.js";
 import cors from "cors";
 import { port, clientOrigin } from "./helpers/const.js";
 import db from "./config/db.js";
+
+const anthropicClient = new Anthropic({
+  apiKey:
+    "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",
+});
 
 const app: Express = express();
 
@@ -122,6 +129,32 @@ const checkDependencies = async () => {
     return false;
   }
 };
+
+// Antropic
+app.post("/api/anthropic_insights", async (req: Request, res: Response) => {
+  const { userQuestion, vehicleData } = req.body;
+
+  try {
+    const message = await anthropicClient.messages.create({
+      model: "claude-opus-5-5",
+      max_tokens: 1024,
+      system: `You are a car expert. Answer questions using this vehicle data:\n<vehicle_data>\n${JSON.stringify(vehicleData, null, 2)}\n</vehicle_data>`,
+      messages: [{ role: "user", content: userQuestion }],
+    });
+
+    res.json({ message });
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      if (typeof userQuestion !== "string" || !userQuestion.trim()) {
+        return res.status(400).json({ error: "userQuestion is required" });
+      }
+
+      console.error("Error calling Anthropic API:", e.message);
+      return res.status(500).json({ error: "Error calling Anthropic API" });
+    }
+    res.status(500).json({ error: "Unknown error calling Anthropic API" });
+  }
+});
 
 // Health-Check
 app.get("/ready", async (_req: Request, res: Response) => {
