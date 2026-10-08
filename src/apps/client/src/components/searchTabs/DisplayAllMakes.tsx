@@ -29,6 +29,7 @@ import {
 
 import { Link } from "react-router";
 import ChatUI from "../../ai-chat/ChatUI";
+import ChatDrawer from "../../ai-chat/ChatDrawer";
 
 interface makeForManufacturerType {
   makeId: number;
@@ -210,6 +211,7 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
     !loading &&
     data && (
       <Stack>
+        <ChatDrawer vehicleData={data.getMakeForManufacturer} />
         <TableContainer sx={{ width: "100%" }}>
           <Table stickyHeader sx={{ minWidth: 500 }}>
             <TableHead>
@@ -265,10 +267,6 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
             </TableBody>
           </Table>
         </TableContainer>
-        <Button onClick={() => setOpen(true)}>Open drawer</Button>
-        <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
-          <ChatUI vehicleData={data.getMakeForManufacturer} />
-        </Drawer>
       </Stack>
     )
   );

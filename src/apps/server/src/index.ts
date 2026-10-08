@@ -132,14 +132,49 @@ const checkDependencies = async () => {
 
 // Antropic
 app.post("/api/anthropic_insights", async (req: Request, res: Response) => {
-  const { userQuestion, vehicleData } = req.body;
+  const { userQuestion, vehicleData, history } = req.body;
+
+  // Earlier turns of the chat. The API is stateless, so Claude only "remembers"
+  // what we send. Keep valid user/assistant text turns, capped to the last 20.
+  const previousMessages: Anthropic.MessageParam[] = (
+    Array.isArray(history) ? history : []
+  )
+    .filter(
+      (m) =>
+        (m?.role === "user" || m?.role === "assistant") &&
+        typeof m?.content === "string",
+    )
+    .map((m) => ({ role: m.role, content: m.content }))
+    .slice(-20);
+
+  // The conversation must start with a user turn
+  while (previousMessages[0]?.role === "assistant") previousMessages.shift();
 
   try {
     const message = await anthropicClient.messages.create({
       model: "claude-haiku-4-5",
       max_tokens: 1024,
-      system: `You are a car expert. Answer questions using this vehicle data:\n<vehicle_data>\n${JSON.stringify(vehicleData, null, 2)}\n</vehicle_data>`,
-      messages: [{ role: "user", content: userQuestion }],
+      system: `You are a car research assistant specialising in vehicle reliability, common issues, and buying advice.
+      You have access to the following vehicle data from NHTSA:
+      <vehicle_data>
+      ${JSON.stringify(vehicleData, null, 2)}
+      </vehicle_data>
+      Use this data as your primary source. For questions not covered by it, draw on your general knowledge about this vehicle. Only answer questions related to this vehicle — if asked anything unrelated, respond: "I can only help with questions about this vehicle."
+              Response style:
+      - Plain, conversational English. No marketing language or filler.
+      - Keep answers under 80 words unless asked for detail.
+      - No markdown headings; short bullet points only when listing.
+
+      Role and Style Instructions:
+      - You are a direct, pragmatic human professional. Your primary directive is to eliminate conversational bloat and keep text tightly bounded.
+
+      Structure & Conciseness (Anti-Bloat Rules):
+      - Cut the No-Ops: Do not include introductory acknowledgements ("Sure, I can help with that", "Based on your request..."). Jump straight to the first word of the response.
+      - No Redundant Echoing: Do not restate, rephrase, or summarize what I just told you. Assume I remember what I wrote.
+      - Single-Pass Information: Provide the answer once. Do not give the answer and then immediately explain what you just gave me unless explicitly asked.
+      - Extreme Economy: Treat tokens as expensive. Use 20 words instead of 200 wherever possible. Stop writing the moment the core task is completed.
+      `,
+      messages: [...previousMessages, { role: "user", content: userQuestion }],
     });
 
     res.json({ message });
@@ -153,6 +188,48 @@ app.post("/api/anthropic_insights", async (req: Request, res: Response) => {
       return res.status(500).json({ error: "Error calling Anthropic API" });
     }
     res.status(500).json({ error: "Unknown error calling Anthropic API" });
+  }
+});
+
+// Suggested starter questions for the chat, based on the current vehicle data.
+// Structured outputs guarantee the reply is JSON matching the schema.
+app.post("/api/anthropic_suggestions", async (req: Request, res: Response) => {
+  const { vehicleData } = req.body;
+
+  try {
+    const message = await anthropicClient.messages.create({
+      model: "claude-haiku-4-5",
+      max_tokens: 1024,
+      system: `You are a car research assistant. Given this vehicle data from NHTSA:
+        <vehicle_data>
+        ${JSON.stringify(vehicleData, null, 2)}
+        </vehicle_data>
+        Suggest 3 short, specific questions (under 12 words each) a car buyer might ask about this data.`,
+
+      messages: [{ role: "user", content: "Suggest questions." }],
+      output_config: {
+        format: {
+          type: "json_schema",
+          schema: {
+            type: "object",
+            properties: {
+              questions: { type: "array", items: { type: "string" } },
+            },
+            required: ["questions"],
+            additionalProperties: false,
+          },
+        },
+      },
+    });
+
+    const text = message.content.find((b) => b.type === "text");
+    const { questions } = JSON.parse(text?.type === "text" ? text.text : "{}");
+    res.json({ questions: questions ?? [] });
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      console.error("Error getting suggestions:", e.message);
+    }
+    res.status(500).json({ error: "Error getting suggestions" });
   }
 });
 

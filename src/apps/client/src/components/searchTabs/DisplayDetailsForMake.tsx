@@ -10,6 +10,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import ChatDrawer from "../../ai-chat/ChatDrawer";
 type GetModelsForMakeId = {
   makeId: number;
   modelId: number;
@@ -57,23 +58,16 @@ const DisplayDetailsForMake = ({ makeId }: Props) => {
 
   console.log({ data, makeId });
 
-  // return makeId
-  //   ? !loading &&
-  //       data &&
-  //       data.getModelsForMakeId.map((d) => (
-  //         <Box key={d.modelId + d.makeId}>
-  //           {d.makeId} - {d.makeName} - {d.modelName}
-  //         </Box>
-  //       ))
-  //   : "No valid Make ID was provided";
   return makeId ? (
     <TableContainer>
+      <ChatDrawer vehicleData={data?.getModelsForMakeId} />
       <Table stickyHeader sx={{ minWidth: 500 }}>
         <TableHead>
           <TableRow>
-            <StyledTableCell>Selected MakeId</StyledTableCell>
-            <StyledTableCell>Make</StyledTableCell>
-            <StyledTableCell>Manufacturer</StyledTableCell>
+            <StyledTableCell>Selected Make Id</StyledTableCell>
+            <StyledTableCell>Model Id</StyledTableCell>
+            <StyledTableCell>Make Name</StyledTableCell>
+            <StyledTableCell>Model Name</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -83,6 +77,9 @@ const DisplayDetailsForMake = ({ makeId }: Props) => {
               <TableRow key={d.modelId}>
                 <TableCell component="th" scope="row" sx={{ minWidth: 200 }}>
                   {d.makeId}
+                </TableCell>
+                <TableCell component="th" scope="row" sx={{ minWidth: 200 }}>
+                  {d.modelId}
                 </TableCell>
                 <TableCell component="th" scope="row" sx={{ minWidth: 400 }}>
                   {/* <Link to={`/makeDetails/${d.makeId}`}> */}
