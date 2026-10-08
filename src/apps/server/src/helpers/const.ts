@@ -9,6 +9,8 @@ export const clientOrigin =
 
 // NHTSA API
 export const nhtsaBaseUrl = "https://vpic.nhtsa.dot.gov/api";
+// Recalls, complaints and safety ratings live on a separate NHTSA API
+export const nhtsaReportsUrl = "https://api.nhtsa.gov";
 export const getAllMakes = "/vehicles/GetAllMakes?format=csv";
 export const getAllManufacturers =
   "/vehicles/getallmanufacturers?format=json&page=2";

@@ -25,6 +25,54 @@ export const typeDefs = `#graphql
     modelName: String!,
   }
 
+  type ModelForMakeYear {
+    makeId: Int!
+    makeName: String!
+    modelId: Int!
+    modelName: String!
+    year: Int!
+  }
+
+  type Recall {
+    campaignNumber: String!
+    reportDate: String
+    component: String
+    summary: String
+    consequence: String
+    remedy: String
+  }
+
+  type Complaint {
+    odiNumber: String!
+    dateOfIncident: String
+    dateFiled: String
+    component: String
+    summary: String
+    crash: Boolean!
+    fire: Boolean!
+    injuries: Int!
+    deaths: Int!
+  }
+
+  # Star ratings are strings because NHTSA returns "Not Rated" for some tests
+  type SafetyRating {
+    vehicleId: Int!
+    description: String!
+    overall: String
+    frontCrash: String
+    sideCrash: String
+    rollover: String
+  }
+
+  type VehicleReport {
+    make: String!
+    model: String!
+    year: Int!
+    recalls: [Recall!]!
+    complaints: [Complaint!]!
+    safetyRatings: [SafetyRating!]!
+  }
+
   type Users {
     user_id: Int!,
     clerk_user_id: String,
@@ -38,6 +86,8 @@ export const typeDefs = `#graphql
     allManufacturers: [AllManufacturers!]!
     getMakeForManufacturer(searchTerm: String!): [GetMakeForManufacturer!]!
     getModelsForMakeId(makeId: Int!): [GetModelsForMakeId!]!
+    modelsForMakeYear(make: String!, year: Int!): [ModelForMakeYear!]!
+    vehicleReport(make: String!, model: String!, year: Int!): VehicleReport!
     users(clerkUserId: String): [Users]!
   }
 

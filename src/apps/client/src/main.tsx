@@ -14,7 +14,7 @@ import { Container, CssBaseline, ThemeProvider } from "@mui/material";
 import { theme } from "./theme.ts";
 import { graphqlServer } from "./helpers/const.ts";
 import { BrowserRouter, Route, Routes } from "react-router";
-import GetDetailsByMakeID from "./components/searchTabs/GetDetailsByMakeID.tsx";
+import VehicleReport from "./components/vehicle/VehicleReport.tsx";
 import { ClerkProvider } from "@clerk/react-router";
 import Header from "./components/Header.tsx";
 
@@ -46,8 +46,8 @@ createRoot(document.getElementById("root")!).render(
               <Routes>
                 <Route path="/" element={<App />} />
                 <Route
-                  path="/makeDetails/:makeId"
-                  element={<GetDetailsByMakeID />}
+                  path="/vehicle/:make/:model/:year"
+                  element={<VehicleReport />}
                 />
               </Routes>
             </Container>

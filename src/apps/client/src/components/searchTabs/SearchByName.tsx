@@ -8,16 +8,16 @@ import DisplayAllMakes from "./DisplayAllMakes";
 
 const SearchByName = (/* {}: Props */) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchTermValue, setSearchTermValue] = useState<string | undefined>(
-    searchParams.get("searchTerm") ?? undefined,
-  );
+  // make + year live in the URL (?make=honda&year=2015) so a search
+  // survives reloads and the back button
+  const make = searchParams.get("make") ?? undefined;
+  const yearParam = Number(searchParams.get("year"));
+  const year =
+    Number.isInteger(yearParam) && yearParam > 0 ? yearParam : undefined;
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSearchClick = (searchTerm?: string) => {
-    setSearchTermValue(searchTerm);
-    if (searchTerm) {
-      setSearchParams({ searchTerm });
-    }
+  const handleSearch = (newMake: string, newYear: number) => {
+    setSearchParams({ make: newMake, year: String(newYear) });
   };
 
   return (
@@ -26,20 +26,20 @@ const SearchByName = (/* {}: Props */) => {
         <Typography variant="overline" color="text.secondary">
           NHTSA vehicle records
         </Typography>
-        <Typography variant="h1">Look up any manufacturer.</Typography>
+        <Typography variant="h1">Look up any car by make and year.</Typography>
         <Typography color="text.secondary" sx={{ fontSize: 18 }}>
-          Search the NHTSA database by manufacturer name, then open a make to
-          see every model on record.
+          Pick a make and model year, then open a model to see its recalls,
+          owner complaints and safety ratings.
         </Typography>
         <SearchInput
           loading={loading}
-          onSearch={handleSearchClick}
-          placeholder="e.g. Honda, Toyota, Ford"
-          searchTermValue={searchTermValue}
+          onSearch={handleSearch}
+          makeValue={make}
+          yearValue={year}
         />
       </Stack>
 
-      <DisplayAllMakes searchTerm={searchTermValue} setLoading={setLoading} />
+      <DisplayAllMakes make={make} year={year} setLoading={setLoading} />
     </>
   );
 };
