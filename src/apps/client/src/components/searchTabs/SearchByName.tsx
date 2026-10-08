@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import SearchInput from "./SearchInput";
 import { useState } from "react";
 import { useSearchParams } from "react-router";
@@ -22,19 +22,22 @@ const SearchByName = (/* {}: Props */) => {
 
   return (
     <>
-      <Typography
-        variant="h5"
-        gutterBottom
-        sx={{ display: "flex", justifyContent: "flex-start", mb: 1 }}
-      >
-        Search By Manufacturer Name
-      </Typography>
-      <SearchInput
-        loading={loading}
-        onSearch={handleSearchClick}
-        placeholder="Enter the name of the car"
-        searchTermValue={searchTermValue}
-      />
+      <Stack spacing={2.5} sx={{ maxWidth: 720, mb: 5 }}>
+        <Typography variant="overline" color="text.secondary">
+          NHTSA vehicle records
+        </Typography>
+        <Typography variant="h1">Look up any manufacturer.</Typography>
+        <Typography color="text.secondary" sx={{ fontSize: 18 }}>
+          Search the NHTSA database by manufacturer name, then open a make to
+          see every model on record.
+        </Typography>
+        <SearchInput
+          loading={loading}
+          onSearch={handleSearchClick}
+          placeholder="e.g. Honda, Toyota, Ford"
+          searchTermValue={searchTermValue}
+        />
+      </Stack>
 
       <DisplayAllMakes searchTerm={searchTermValue} setLoading={setLoading} />
     </>

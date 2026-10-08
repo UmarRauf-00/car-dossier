@@ -1,155 +1,75 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #a04717;
-  --accent-bg: #175ca0;
-  --accent-border: none;
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
-  --heading: system-ui, "Segoe UI", Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #373737;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px dotted var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-.banner-wrapper {
-  position: relative;
-}
-
-.banner-title {
-  background-color: #0000005a;
-  border-radius: 2px;
-  border: 4px solid #00000033;
-  font-size: 5rem;
-  padding: 20px;
-  text-shadow: #1e2e42 1px 0 10px;
-}
-
-.banner-img {
-  display: flex;
-  align-items: center;
-  background-image:
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(18, 18, 18, 0.73)),
-    url(../assets/top-banner.jpg);
-  background-position: center;
-  background-size: cover;
-  border-radius: 8px 8px 0 0;
-  flex-direction: column;
-  height: 300px;
-  justify-content: center;
-  margin-left: calc(-50vw + 50%);
-  width: 100vw;
-}
-
+/* Page basics. Colours, fonts and component styles live in theme.ts;
+   this file only covers what MUI doesn't reach. */
 body {
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+a {
+  color: #1b5fa8;
+}
+a:hover {
+  color: #134680;
+}
+
+/* Icons8 attribution for the favicon (required by their free licence) */
 footer {
-  border: 1px dotted var(--border);
-  width: 1126px;
-  margin: 0 auto;
-  color: #374f68;
-  font-size: 10px;
   display: flex;
   justify-content: center;
-  padding: 5px 0;
+  padding: 24px 0 32px;
+  font:
+    11px "IBM Plex Sans",
+    system-ui,
+    sans-serif;
+  color: #9aa1ab;
+  background: #f5f6f8;
 }
-
 footer > a {
-  color: #374f68;
+  color: inherit;
   text-decoration: none;
 }
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+footer > a:hover {
+  color: #545b66;
+  text-decoration: underline;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+/* Chat (chatscope) — its stylesheet doesn't read the MUI theme */
+.cs-main-container {
+  border: 0;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
+.cs-message-list {
+  background-color: #f5f6f8;
 }
-p {
-  margin: 0;
+.cs-message--outgoing .cs-message__content {
+  background-color: #1b5fa8;
+  color: #ffffff;
+  border-radius: 12px 12px 4px 12px;
 }
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+.cs-message--incoming .cs-message__content {
+  background-color: #ffffff;
+  color: #15181c;
+  border: 1px solid #e3e6eb;
+  border-radius: 12px 12px 12px 4px;
 }
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.cs-message-input {
+  border-top: 1px solid #e3e6eb;
+  padding: 12px 8px 12px 16px;
+}
+.cs-message-input__content-editor-wrapper,
+.cs-message-input__content-editor-container,
+.cs-message-input__content-editor {
+  background-color: #ffffff;
+  font-family: inherit;
+}
+.cs-message-input__content-editor-wrapper {
+  border: 1px solid #d5d9e0;
+  border-radius: 10px;
+}
+.cs-button--send {
+  color: #1b5fa8;
+}
+.cs-typing-indicator__text {
+  color: #545b66;
 }

@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import {
   SignInButton,
   SignUpButton,
@@ -6,59 +6,43 @@ import {
   useUser,
 } from "@clerk/react-router";
 
+// Sign in / sign up, or the signed-in user's menu. Rendered inside <Header />.
 const AuthBar = () => {
   const { user, isSignedIn } = useUser();
 
   return (
-    <AppBar
-      position="static"
-      sx={{
-        maxWidth: "14rem",
-        position: "absolute",
-        right: "0px",
-        bottom: "0px",
-        background: "linear-gradient(#FFFFFF10, #FFFFFF80)",
-        boxShadow: "none",
-        border: "none",
-        borderRadius: "4px 4px 0 0",
-      }}
+    <Box
+      component="nav"
+      aria-label="Account"
+      sx={{ display: "flex", gap: 1.5, alignItems: "center" }}
     >
-      <Toolbar sx={{ justifyContent: "center" }}>
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          {isSignedIn ? (
-            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-              <Typography component="span" variant="body2">
-                Welcome, {user.firstName || user.username}
-              </Typography>
-              <UserButton />
-            </Box>
-          ) : (
-            <>
-              <SignInButton>
-                <Button
-                  name="sign-in-button"
-                  variant="contained"
-                  size="small"
-                  // sx={{ background: "#175ca0", color: "#FFFFFF" }}
-                >
-                  Sign in
-                </Button>
-              </SignInButton>
-              <SignUpButton>
-                <Button
-                  name="sign-up-button"
-                  variant="contained"
-                  size="small"
-                  // sx={{ background: "#175ca0", color: "#FFFFFF" }}
-                >
-                  Sign up
-                </Button>
-              </SignUpButton>
-            </>
-          )}
-        </Box>
-      </Toolbar>
-    </AppBar>
+      {isSignedIn ? (
+        <>
+          <Typography
+            component="span"
+            variant="body2"
+            color="text.secondary"
+            sx={{ display: { xs: "none", sm: "inline" } }}
+          >
+            Welcome, {user.firstName || user.username}
+          </Typography>
+          <UserButton />
+        </>
+      ) : (
+        <>
+          <SignInButton>
+            <Button name="sign-in-button" variant="outlined" color="inherit">
+              Sign in
+            </Button>
+          </SignInButton>
+          <SignUpButton>
+            <Button name="sign-up-button" variant="contained">
+              Sign up
+            </Button>
+          </SignUpButton>
+        </>
+      )}
+    </Box>
   );
 };
 

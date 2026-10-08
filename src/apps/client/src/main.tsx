@@ -1,16 +1,22 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import "@fontsource/ibm-plex-sans/400.css";
+import "@fontsource/ibm-plex-sans/500.css";
+import "@fontsource/ibm-plex-sans/600.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
 import "./main.css";
 import App from "./App.tsx";
 
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { Container, CssBaseline, ThemeProvider } from "@mui/material";
 import { theme } from "./theme.ts";
 import { graphqlServer } from "./helpers/const.ts";
 import { BrowserRouter, Route, Routes } from "react-router";
 import GetDetailsByMakeID from "./components/searchTabs/GetDetailsByMakeID.tsx";
 import { ClerkProvider } from "@clerk/react-router";
+import Header from "./components/Header.tsx";
 
 const client = new ApolloClient({
   link: new HttpLink({
@@ -31,13 +37,20 @@ createRoot(document.getElementById("root")!).render(
         <ApolloProvider client={client}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Routes>
-              <Route path="/" element={<App />} />
-              <Route
-                path="/makeDetails/:makeId"
-                element={<GetDetailsByMakeID />}
-              />
-            </Routes>
+            <Header />
+            <Container
+              maxWidth="lg"
+              component="main"
+              sx={{ py: { xs: 4, md: 7 } }}
+            >
+              <Routes>
+                <Route path="/" element={<App />} />
+                <Route
+                  path="/makeDetails/:makeId"
+                  element={<GetDetailsByMakeID />}
+                />
+              </Routes>
+            </Container>
           </ThemeProvider>
         </ApolloProvider>
       </ClerkProvider>

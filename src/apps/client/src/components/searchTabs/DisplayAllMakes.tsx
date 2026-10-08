@@ -1,11 +1,10 @@
 import { gql, type TypedDocumentNode } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import {
-  styled,
+  Box,
   Table,
   TableBody,
   TableCell,
-  tableCellClasses,
   TableContainer,
   TableHead,
   TableRow,
@@ -13,8 +12,7 @@ import {
   Stack,
   Tooltip,
   Alert,
-  Drawer,
-  Button,
+  Typography,
 } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { useUser } from "@clerk/react";
@@ -28,8 +26,8 @@ import {
 } from "react";
 
 import { Link } from "react-router";
-import ChatUI from "../../ai-chat/ChatUI";
 import ChatDrawer from "../../ai-chat/ChatDrawer";
+import { monoFont } from "../../theme";
 
 interface makeForManufacturerType {
   makeId: number;
@@ -90,16 +88,6 @@ type Props = {
   setLoading: Dispatch<SetStateAction<boolean>>;
 };
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
 interface FavoriteManufacturerType {
   id?: number;
   manufacturerName?: string;
@@ -107,7 +95,6 @@ interface FavoriteManufacturerType {
 
 const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   const { user, isSignedIn } = useUser();
-  const [open, setOpen] = useState(false);
   const clerkUser = user; // just an alias for clarity on which user object is being used
   const [favoriteManufacturer, setFavoriteManufacturer] = useState<
     FavoriteManufacturerType[]
@@ -210,30 +197,51 @@ const DisplayAllMakes = ({ searchTerm, setLoading }: Props) => {
   return (
     !loading &&
     data && (
-      <Stack>
-        <ChatDrawer vehicleData={data.getMakeForManufacturer} />
-        <TableContainer sx={{ width: "100%" }}>
-          <Table stickyHeader sx={{ minWidth: 500 }}>
+      <Stack spacing={2} component="section" aria-labelledby="results-heading">
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 1.5,
+          }}
+        >
+          <Typography variant="h2" id="results-heading">
+            {data.getMakeForManufacturer.length} results for “{searchTerm}”
+          </Typography>
+          <ChatDrawer vehicleData={data.getMakeForManufacturer} />
+        </Box>
+        <TableContainer>
+          <Table sx={{ minWidth: 640 }}>
             <TableHead>
               <TableRow>
-                <StyledTableCell>MakeId & Make</StyledTableCell>
-                <StyledTableCell>Manufacturer</StyledTableCell>
-                <StyledTableCell>Favorite</StyledTableCell>
+                <TableCell sx={{ width: 120 }}>Make ID</TableCell>
+                <TableCell sx={{ width: 160 }}>Make</TableCell>
+                <TableCell>Manufacturer</TableCell>
+                <TableCell align="center" sx={{ width: 100 }}>
+                  Favorite
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {data.getMakeForManufacturer.map((d) => (
                 <TableRow key={d.makeId + d.manufacturerName} hover>
-                  <TableCell component="th" scope="row" sx={{ width: 400 }}>
-                    <Link to={`/makeDetails/${d.makeId}`}>
-                      {d.makeId} - {d.makeName}
+                  <TableCell
+                    sx={{ fontFamily: monoFont, color: "text.secondary" }}
+                  >
+                    {d.makeId}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    <Link
+                      to={`/makeDetails/${d.makeId}`}
+                      style={{ fontWeight: 500 }}
+                    >
+                      {d.makeName}
                     </Link>
                   </TableCell>
-                  <TableCell component="th" scope="row" sx={{ width: 550 }}>
-                    {d.manufacturerName}
-                  </TableCell>
-
-                  <TableCell component="th" scope="row" sx={{ width: 100 }}>
+                  <TableCell>{d.manufacturerName}</TableCell>
+                  <TableCell align="center" sx={{ py: 0.5 }}>
                     <Tooltip
                       title={
                         isSignedIn
