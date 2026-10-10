@@ -23,7 +23,7 @@ COPY . .
 
 
 # Install project dependencies using a frozen lockfile (ensures a clean, reproducible install)
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 
 # Build backend (server) (outputs to /app/src/apps/server/dist)

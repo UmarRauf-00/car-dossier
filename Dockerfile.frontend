@@ -20,7 +20,7 @@ WORKDIR /app
 COPY . .
 
 # Install project dependencies using a frozen lockfile (ensures a clean, reproducible install)
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 # Vite bakes VITE_* values into the static bundle at build time, so they
 # must be supplied here as build args (not as a runtime `environment:` -
@@ -65,7 +65,7 @@ COPY --link --from=builder /app/src/apps/client/dist ./dist
 
 
 # Install only the `serve` package (no global install, pinned version)
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install serve@^14.2.6 --prod
+RUN pnpm install serve@^14.2.6 --prod
 
 
 # Run the container as a non-root user for security best practices

@@ -13,8 +13,7 @@ import { port, clientOrigin } from "./helpers/const.js";
 import db from "./config/db.js";
 
 const anthropicClient = new Anthropic({
-  apiKey:
-    "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",
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 const app: Express = express();
