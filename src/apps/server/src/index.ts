@@ -174,6 +174,7 @@ app.post("/api/anthropic_insights", async (req: Request, res: Response) => {
       - Extreme Economy: Treat tokens as expensive. Use 20 words instead of 200 wherever possible. Stop writing the moment the core task is completed.
       `,
       messages: [...previousMessages, { role: "user", content: userQuestion }],
+      temperature: 0.7,
     });
 
     res.json({ message });

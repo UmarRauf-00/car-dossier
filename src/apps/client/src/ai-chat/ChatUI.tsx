@@ -13,6 +13,9 @@ import { Chip } from "@mui/material";
 import { useEffect, useState } from "react";
 import { graphqlServer } from "../helpers/const";
 
+import DOMPurify from "dompurify";
+import { marked } from "marked";
+
 // Same host as the GraphQL endpoint, minus the /graphql path
 const apiOrigin = new URL(graphqlServer).origin;
 const insightsUrl = `${apiOrigin}/api/anthropic_insights`;
@@ -71,7 +74,7 @@ const ChatUI = ({ vehicleData }: Props) => {
     setMessages((prev) => [
       ...prev,
       {
-        message: text,
+        message: DOMPurify.sanitize(marked.parse(text, { async: false })),
         sentTime: new Date().toLocaleTimeString(),
         sender: direction === "outgoing" ? "You" : "Claude",
         direction,
